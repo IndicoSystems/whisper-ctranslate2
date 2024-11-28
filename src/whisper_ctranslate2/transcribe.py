@@ -6,6 +6,7 @@ from faster_whisper import WhisperModel, BatchedInferencePipeline
 from .languages import LANGUAGES
 from typing import BinaryIO
 import numpy as np
+import json
 
 system_encoding = sys.getdefaultencoding()
 
@@ -49,6 +50,7 @@ class TranscriptionOptions(NamedTuple):
     vad_min_speech_duration_ms: Optional[int]
     vad_max_speech_duration_s: Optional[int]
     vad_min_silence_duration_ms: Optional[int]
+    print_segment_as_json: Optional[bool]
 
 
 class Transcribe:
@@ -188,7 +190,9 @@ class Transcribe:
                 start, end, text = segment.start, segment.end, segment.text
                 all_text += segment.text
 
-                if verbose or options.print_colors:
+                if options.print_segment_as_json:
+                    print(json.dumps(segment._asdict()))
+                elif verbose or options.print_colors:
                     if options.print_colors and segment.words:
                         text = self._get_colored_text(segment.words)
                     else:
