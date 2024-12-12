@@ -119,6 +119,7 @@ def main():
     local_files_only: bool = args.pop("local_files_only")
     live_volume_threshold: float = args.pop("live_volume_threshold")
     live_input_device: int = args.pop("live_input_device")
+    live_input_device_sample_rate: int = args.pop("live_input_device_sample_rate")
     hf_token = args.pop("hf_token")
     speaker_name = args.pop("speaker_name")
     batched = args.pop("batched")
@@ -212,6 +213,7 @@ def main():
             verbose,
             live_volume_threshold,
             live_input_device,
+            live_input_device_sample_rate,
             options,
         ).inference()
 
