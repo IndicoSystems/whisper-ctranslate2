@@ -74,15 +74,12 @@ def get_transcription_options(args):
         print_colors=args.pop("print_colors"),
         hallucination_silence_threshold=args.pop("hallucination_silence_threshold"),
         vad_filter=args.pop("vad_filter"),
-        vad_onset=args.pop("vad_onset"),
+        vad_threshold=args.pop("vad_threshold"),
         vad_min_speech_duration_ms=args.pop("vad_min_speech_duration_ms"),
         vad_max_speech_duration_s=args.pop("vad_max_speech_duration_s"),
         vad_min_silence_duration_ms=args.pop("vad_min_silence_duration_ms"),
-<<<<<<< HEAD
         print_segment_as_json=args.pop("segments_as_json"),
-=======
         multilingual=args.pop("multilingual"),
->>>>>>> 5650d69 (Add support for faster-whisper multilingual option)
     )
 
 
