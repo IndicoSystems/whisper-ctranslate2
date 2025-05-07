@@ -200,7 +200,7 @@ class Transcribe:
 
         list_segments = []
         last_pos = 0
-        accumated_inc = 0
+        accumulated_inc = 0
         all_text = ""
         diarize_df = None
         if diarize_model:
@@ -242,10 +242,10 @@ class Transcribe:
                 duration = segment.end - last_pos
                 increment = (
                     duration
-                    if accumated_inc + duration < info.duration
-                    else info.duration - accumated_inc
+                    if accumulated_inc + duration < info.duration
+                    else info.duration - accumulated_inc
                 )
-                accumated_inc += increment
+                accumulated_inc += increment
                 last_pos = segment.end
                 pbar.update(increment)
 
