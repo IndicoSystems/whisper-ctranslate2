@@ -146,6 +146,20 @@ _[SPEAKER_00]: There is a lot of people in this room_
 The option `--speaker_name SPEAKER_NAME` allows to use your own string to identify the speaker.
 
 
+### Offline diarization:
+
+Follow the community tutorial "Offline Speaker Diarization (speaker-diarization-3.1)".
+
+URL: https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/community/offline_usage_speaker_diarization.ipynb
+
+The key idea is to edit the .yaml file that defines the speaker-diarization-3.1 pipeline.
+Only the paths to the models making up the pipeline need to be edited.
+
+It's important to remember that the paths are relative to where the code is called from, not relative to where the config file is placed.
+Also, remember that the pipeline call takes as argument the path to the .yaml file that contains the pipeline specification.
+
+
+
 # Need help?
 
 Check our [frequently asked questions](FAQ.md) for common questions.
