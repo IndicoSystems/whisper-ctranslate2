@@ -26,12 +26,11 @@ print(HF_TOKEN)
 #   os.makedirs(model_dir)
 print(os.getenv("HF_CACHE_DIR"))
 
-snapshot_download("pyannote/segmentation-3.0", token=HF_TOKEN, local_dir="./model_dir/pyannote/segmentation-3.0", revision="main")
-snapshot_download("pyannote/wespeaker-voxceleb-resnet34-LM", token=HF_TOKEN, local_dir="./model_dir/pyannote/wespeaker-voxceleb-resnet34-LM", revision="main")
+snapshot_download("pyannote/segmentation-3.0", token=HF_TOKEN)
+snapshot_download("pyannote/wespeaker-voxceleb-resnet34-LM", token=HF_TOKEN)
 
 snapshot_download(
     "pyannote/speaker-diarization-3.1",
-    token=HF_TOKEN,
-    revision="main",
-    local_dir="./model_dir/pyannote/speaker-diarization-3.1"
+    token=HF_TOKEN
 )
+

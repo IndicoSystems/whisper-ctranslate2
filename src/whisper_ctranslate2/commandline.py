@@ -1,3 +1,23 @@
+from pathlib import Path
+from dotenv import load_dotenv
+# Resolve .env path relative to the current module
+ENV_PATH = Path(__file__).resolve().parent / ".env"
+
+# Load environment variables, overriding existing ones if needed
+load_dotenv(dotenv_path=ENV_PATH, override=True)
+
+import os
+os.environ["HF_HUB_OFFLINE"] = "0"
+os.environ["HF_HOME"] = "/workspaces/whisper-ctranslate2/model_cache/huggingface" # Old/standard path:"/home/vscode/.cache/huggingface"
+os.environ["HF_HUB_CACHE"] = "/workspaces/whisper-ctranslate2/model_cache/huggingface/hub" # Old/standard path: "/home/vscode/.cache/huggingface/hub"
+os.environ["TORCH_HOME"] = "/workspaces/whisper-ctranslate2/model_cache/torch"
+os.environ["TORCH_EXTENSIONS_DIR"] = "/workspaces/whisper-ctranslate2/model_cache/torch/extensions"
+os.environ["TRANSFORMERS_CACHE"] = "/workspaces/whisper-ctranslate2/model_cache/huggingface/transformers"
+os.environ["XDG_CACHE_HOME"] = "/workspaces/whisper-ctranslate2/model_cache"
+os.environ["PYANNOTE_CACHE"] = "/workspaces/whisper-ctranslate2/model_cache/torch/pyannote"
+os.environ["PIP_EXTRA_INDEX_URL"] = "https://download.pytorch.org/whl/cpu"
+
+
 import argparse
 
 from .languages import LANGUAGES, TO_LANGUAGE_CODE

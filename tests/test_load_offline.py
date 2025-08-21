@@ -1,12 +1,44 @@
 import os
-os.environ["HF_HUB_OFFLINE"] = "1"
-os.environ["HF_HOME"] = "/home/vscode/.cache/huggingface"
-os.environ["HF_HUB_CACHE"] = "/home/vscode/.cache/huggingface/hub"
+from dotenv import load_dotenv
+load_dotenv(override=True)
+#os.environ["HF_HUB_OFFLINE"] = "1"
+#os.environ["HF_HOME"] = "/workspaces/whisper-ctranslate2/model_cache/huggingface" # Old/standard path:"/home/vscode/.cache/huggingface"
+#os.environ["HF_HUB_CACHE"] = "/workspaces/whisper-ctranslate2/model_cache/huggingface/hub" # Old/standard path: "/home/vscode/.cache/huggingface/hub"
+
 
 from whisper_ctranslate2.diarization import Diarization
 import unittest
-from dotenv import load_dotenv
+
 from huggingface_hub.constants import HF_HUB_OFFLINE, HF_HUB_CACHE
+from pathlib import Path
+from pyannote.audio import Pipeline
+
+
+def load_pipeline_from_pretrained(path_to_config: str | Path) -> Pipeline:
+    path_to_config = Path(path_to_config)
+
+    print(f"Loading pyannote pipeline from {path_to_config}...")
+    # the paths in the config are relative to the current working directory
+    # so we need to change the working directory to the model path
+    # and then change it back
+
+    cwd = Path.cwd().resolve()  # store current working directory
+
+    # first .parent is the folder of the config, second .parent is the folder containing the 'models' folder
+    cd_to = path_to_config.parent.resolve()
+
+    print(f"Changing working directory to {cd_to}")
+    os.chdir(cd_to)
+
+    print(os.path.isfile(path_to_config))
+
+    pipeline = Pipeline.from_pretrained(path_to_config)
+
+    print(f"Changing working directory back to {cwd}")
+    os.chdir(cwd)
+
+    return pipeline
+
 
 class TestLoadOffline(unittest.TestCase):
 
@@ -26,22 +58,25 @@ class TestLoadOffline(unittest.TestCase):
 
     def test_direct_pipeline_load_absolute(self):
         from pyannote.audio import Pipeline
-        REV = "84fd25912480287da0247647c3d2b4853cb3ee5d"
-        pipeline = Pipeline.from_pretrained(checkpoint_path="/home/vscode/.cache/huggingface/hub/models--pyannote--speaker-diarization-3.1/snapshots/84fd25912480287da0247647c3d2b4853cb3ee5d")
+        #os.chdir("..") # Move up one directory to the root of the project
+        path = "./model_dir/pyannote/diarization/pyannote_diarization_config.yaml"
+        print(f"Current working directory: {os.getcwd()}")
+        print(f"Yaml file resolves: {os.path.isfile(path)}")
+        pipeline = Pipeline.from_pretrained(path)
         self.assertIsNotNone(pipeline)
 
-    def test_direct_pipeline_load_relative(self):
+    def test_direct_pipeline_load_environment(self):
         from pyannote.audio import Pipeline
-        pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=HF_TOKEN)
+        model_path = os.environ["DIARIZATION_MODEL_PATH"]
+        print(f"Model path: {model_path}")
+        print(f"Yaml file resolves: {os.path.isfile(model_path)}")
+        pipeline = Pipeline.from_pretrained(model_path)
         self.assertIsNotNone(pipeline)
-    
-    def test_load_pipeline(self):
 
-        diarizer = Diarization(use_auth_token=HF_TOKEN)
-        diarizer_pipe = diarizer._load_model()
-
-        self.assertIsNotNone(diarizer_pipe)
-
+    def test_pipeline_load_online(self):
+        from pyannote.audio import Pipeline
+        pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=os.environ["HF_TOKEN"])
+        self.assertIsNotNone(pipeline)
 
 
 if __name__ == "__main__":

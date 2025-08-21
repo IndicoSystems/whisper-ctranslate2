@@ -1,3 +1,14 @@
+import os
+os.environ["HF_HUB_OFFLINE"] = "0"
+os.environ["HF_HOME"] = "/workspaces/whisper-ctranslate2/model_cache/huggingface" # Old/standard path:"/home/vscode/.cache/huggingface"
+os.environ["HF_HUB_CACHE"] = "/workspaces/whisper-ctranslate2/model_cache/huggingface/hub" # Old/standard path: "/home/vscode/.cache/huggingface/hub"
+os.environ["TORCH_HOME"] = "/workspaces/whisper-ctranslate2/model_cache/torch"
+os.environ["TORCH_EXTENSIONS_DIR"] = "/workspaces/whisper-ctranslate2/model_cache/torch/extensions"
+os.environ["TRANSFORMERS_CACHE"] = "/workspaces/whisper-ctranslate2/model_cache/huggingface/transformers"
+os.environ["XDG_CACHE_HOME"] = "/workspaces/whisper-ctranslate2/model_cache"
+os.environ["PYANNOTE_CACHE"] = "/workspaces/whisper-ctranslate2/model_cache/torch/pyannote"
+os.environ["PIP_EXTRA_INDEX_URL"] = "https://download.pytorch.org/whl/cpu"
+
 import datetime
 import os
 import sys
