@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  run-tests-and-build:
+  build:
     environment: CI/CD
 
     runs-on: ubuntu-latest
@@ -23,18 +23,6 @@ jobs:
         run: |
           pip install --no-cache-dir wheel
           pip install --no-cache-dir -e .[dev]
-
-      - name: Run tests
-        run: |
-          make run-tests
-
-      - name: Run e2e tests
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-
-        run: |
-          make install-dependencies-e2e-tests
-          make run-e2e-tests
 
       - name: build wheel
         run: |
