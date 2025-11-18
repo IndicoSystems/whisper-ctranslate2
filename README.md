@@ -38,6 +38,7 @@ GPU execution requires the NVIDIA libraries cuBLAS 11.x and cuDNN 8.x to be inst
 
 By default the best hardware available is selected for inference. You can use the options `--device` and `--device_index` to control manually the selection.
 
+
 # Usage
 
 Same command line as OpenAI Whisper.
@@ -71,7 +72,7 @@ On top of the OpenAI Whisper command line options, there are some specific optio
 Batched inference transcribes each segment in-dependently which can provide an additional 2x-4x speed increase:
 
     whisper-ctranslate2 inaguracio2011.mp3 --batched True
-    
+
 You can additionally use the --batch_size to specify the maximum number of parallel requests to model for decoding.
 
 Batched inference uses Voice Activity Detection (VAD) filter and ignores the following paramters: compression_ratio_threshold, logprob_threshold,
