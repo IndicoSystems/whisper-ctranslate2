@@ -1,14 +1,9 @@
-name: CI
+name: Build and test on pull-request
 
 on:
   push:
     branches:
-      - '**'
-    tags:
-      - '**'
-  pull_request:
-    branches:
-      - main
+      - 'main'
 
 jobs:
 
