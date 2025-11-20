@@ -2,3 +2,5 @@ build
 dist
 media
 output_debug
+/dev_wct2
+__pycache__/
