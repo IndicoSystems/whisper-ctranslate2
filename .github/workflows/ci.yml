@@ -43,7 +43,6 @@ jobs:
         os: [ubuntu-22.04]
         python-version: ["3.10", "3.11", "3.12", "3.13"]  # Drop 3.14 for now
     runs-on: ${{ matrix.os }}
-
     steps:
       - uses: actions/checkout@v4
 
@@ -125,7 +124,6 @@ jobs:
             echo "No GPU/driver detected. Forcing CPU mode."
             echo "CUDA_VISIBLE_DEVICES=" >> "$GITHUB_ENV"
           fi
-      TODO: Fix tests and enable them again
       - name: Run tests
         run: make run-tests
 
