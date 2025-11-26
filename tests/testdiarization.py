@@ -1,6 +1,7 @@
 import unittest
+import numpy as np
 
-from src.whisper_ctranslate2.diarization import Diarization
+from whisper_ctranslate2.diarization import Diarization
 
 
 class TestDiarization(unittest.TestCase):
