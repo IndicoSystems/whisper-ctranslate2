@@ -1,4 +1,5 @@
 import unittest
+
 import numpy as np
 
 from src.whisper_ctranslate2.diarization import Diarization
@@ -17,11 +18,7 @@ class TestDiarization(unittest.TestCase):
         """Convert pyannote data format to numpy structured array format"""
         date_frame = np.array(
             pyannote_data,
-            dtype=[
-                ("segment", object),
-                ("label", object),
-                ("speaker", object)
-            ],
+            dtype=[("segment", object), ("label", object), ("speaker", object)],
         )
 
         segments_as_records = np.core.records.fromarrays(
