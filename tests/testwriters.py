@@ -1,8 +1,8 @@
 import json
 import os
 import unittest
-from dataclasses import asdict
 
+from dataclasses import asdict
 from tempfile import NamedTemporaryFile
 
 from faster_whisper.transcribe import Segment, Word
@@ -18,19 +18,21 @@ from src.whisper_ctranslate2.writers import (
 
 class TestWriters(unittest.TestCase):
     def _get_segment(self, text, start=0, end=1):
-        return asdict(Segment(
-            start=start,
-            end=end,
-            text=text,
-            words=[],
-            avg_logprob=0,
-            no_speech_prob=0,
-            id=0,
-            seek=0,
-            tokens=[],
-            temperature=0,
-            compression_ratio=0,
-        ))
+        return asdict(
+            Segment(
+                start=start,
+                end=end,
+                text=text,
+                words=[],
+                avg_logprob=0,
+                no_speech_prob=0,
+                id=0,
+                seek=0,
+                tokens=[],
+                temperature=0,
+                compression_ratio=0,
+            )
+        )
 
     def _read_subtitles(self, filename):
         with open(filename, "r") as fh_r:
