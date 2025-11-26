@@ -1,3 +1,4 @@
+import json
 import sys
 
 from typing import BinaryIO, List, NamedTuple, Optional, Union
@@ -9,7 +10,6 @@ from faster_whisper import BatchedInferencePipeline, WhisperModel
 
 from .languages import LANGUAGES
 from .writers import format_timestamp
-import json
 
 system_encoding = sys.getdefaultencoding()
 
@@ -144,8 +144,8 @@ class Transcribe:
         live: bool,
         options: TranscriptionOptions,
         diarize_model,
-        diarization_output = None,
-        speaker_name = None,
+        diarization_output=None,
+        speaker_name=None,
     ):
         vad_parameters = self._get_vad_parameters_dictionary(options)
 
@@ -204,9 +204,7 @@ class Transcribe:
         all_text = ""
         diarize_df = None
         if diarize_model:
-            diarize_df = diarize_model.diarize_chunks_to_records(
-                diarization_output
-            )
+            diarize_df = diarize_model.diarize_chunks_to_records(diarization_output)
 
         with tqdm.tqdm(
             total=info.duration, unit="seconds", disable=verbose or live is not False
@@ -217,9 +215,7 @@ class Transcribe:
 
                 if diarization_output:
                     diarized_segment = diarize_model.assign_speaker_to_segment(
-                        segment._asdict(),
-                        diarize_df,
-                        speaker_name
+                        segment._asdict(), diarize_df, speaker_name
                     )
                     print(json.dumps(diarized_segment))
                 elif options.print_segment_as_json:
