@@ -156,6 +156,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+dev_wct2/ # Dev environment used for local development
 
 # Spyder project settings
 .spyderproject
