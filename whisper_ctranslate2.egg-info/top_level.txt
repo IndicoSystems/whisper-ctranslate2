@@ -1,1 +1,0 @@
-src/whisper_ctranslate2
