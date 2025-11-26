@@ -1,6 +1,7 @@
 import json
 import os
 import unittest
+from dataclasses import asdict
 
 from tempfile import NamedTemporaryFile
 
@@ -17,7 +18,7 @@ from src.whisper_ctranslate2.writers import (
 
 class TestWriters(unittest.TestCase):
     def _get_segment(self, text, start=0, end=1):
-        return Segment(
+        return asdict(Segment(
             start=start,
             end=end,
             text=text,
@@ -29,7 +30,7 @@ class TestWriters(unittest.TestCase):
             tokens=[],
             temperature=0,
             compression_ratio=0,
-        )._asdict()
+        ))
 
     def _read_subtitles(self, filename):
         with open(filename, "r") as fh_r:
@@ -134,7 +135,7 @@ class TestWriters(unittest.TestCase):
         segment = self._get_segment("Hello", start=1, end=5)
         segments = [segment]
         segments[0]["words"] = [
-            Word(start=1, end=2, word="Hello", probability=0)._asdict(),
+            asdict(Word(start=1, end=2, word="Hello", probability=0)),
         ]
 
         results = {"text": "all text", "segments": segments}
@@ -169,8 +170,8 @@ class TestWriters(unittest.TestCase):
         segment = self._get_segment("Hello friends", start=1, end=5)
         segments = [segment]
         segments[0]["words"] = [
-            Word(start=1, end=2, word="Hello", probability=0)._asdict(),
-            Word(start=4, end=6, word="friends", probability=0)._asdict(),
+            asdict(Word(start=1, end=2, word="Hello", probability=0)),
+            asdict(Word(start=4, end=6, word="friends", probability=0)),
         ]
 
         results = {"text": "all text", "segments": segments}
@@ -190,11 +191,11 @@ class TestWriters(unittest.TestCase):
         segment = self._get_segment("Hello friends", start=1, end=5)
         segments = [segment]
         segments[0]["words"] = [
-            Word(start=1, end=2, word="Hello", probability=0)._asdict(),
-            Word(start=4, end=6, word=" all", probability=0)._asdict(),
-            Word(start=7, end=9, word=" my", probability=0)._asdict(),
-            Word(start=10, end=15, word=" friends", probability=0)._asdict(),
-            Word(start=16, end=17, word=" here", probability=0)._asdict(),
+            asdict(Word(start=1, end=2, word="Hello", probability=0)),
+            asdict(Word(start=4, end=6, word=" all", probability=0)),
+            asdict(Word(start=7, end=9, word=" my", probability=0)),
+            asdict(Word(start=10, end=15, word=" friends", probability=0)),
+            asdict(Word(start=16, end=17, word=" here", probability=0)),
         ]
 
         results = {"text": "all text", "segments": segments}
@@ -220,8 +221,8 @@ class TestWriters(unittest.TestCase):
         segment = self._get_segment("Hello friends", start=1, end=5)
         segments = [segment]
         segments[0]["words"] = [
-            Word(start=1, end=2, word="Hello", probability=0)._asdict(),
-            Word(start=4, end=6, word="friends", probability=0)._asdict(),
+            asdict(Word(start=1, end=2, word="Hello", probability=0)),
+            asdict(Word(start=4, end=6, word="friends", probability=0)),
         ]
 
         results = {"text": "all text", "segments": segments}
@@ -264,7 +265,7 @@ class TestWriters(unittest.TestCase):
         segment = self._get_segment("Hello", start=0, end=0)
         segments = [segment]
         segments[0]["words"] = [
-            Word(start=WORD_START, end=WORD_END, word=WORD, probability=0)._asdict(),
+            asdict(Word(start=WORD_START, end=WORD_END, word=WORD, probability=0)),
         ]
 
         results = {"text": "all text", "segments": segments}
