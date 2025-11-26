@@ -6,13 +6,15 @@ from faster_whisper.audio import decode_audio
 
 try:
     import torch
-except Exception:
-    print("Unable to import torch library. Make sure that it's installed")
+except Exception as e:
+    print(f"Unable to import torch library. Make sure that it's installed. Error: {e}")
 
 try:
     from pyannote.audio import Pipeline
-except Exception:
-    print("Unable to import pyannote.audio library. Make sure that it's installed")
+except Exception as e:
+    print(
+        f"Unable to import pyannote.audio library. Make sure that it's installed. Error: {e}"
+    )
 
 
 class Diarization:
@@ -20,9 +22,11 @@ class Diarization:
         self,
         use_auth_token=None,
         device: str = "cpu",
+        num_speakers=2,
     ):
         self.device = device
         self.use_auth_token = use_auth_token
+        self.num_speakers = num_speakers
 
     def set_threads(self, threads):
         torch.set_num_threads(threads)
@@ -32,14 +36,12 @@ class Diarization:
         torch.cuda.empty_cache()
 
     def _load_model(self) -> "Pipeline":
-        model_name = "pyannote/speaker-diarization-3.1"
+        model_name = "pyannote/speaker-diarization-community-1"
         device = torch.device(self.device)
-        model_handle = Pipeline.from_pretrained(
-            model_name, token=self.use_auth_token
-        )
+        model_handle = Pipeline.from_pretrained(model_name, token=self.use_auth_token)
         if model_handle is None:
             raise ValueError(
-                f"The token Hugging Face token '{self.use_auth_token}' for diarization is not valid or you did not accept the EULA"
+                f"The token Hugging Face token '{self.use_auth_token}' for diarization is not valid or you did not accept the EULAs for the necessary models. See https://github.com/Softcatala/whisper-ctranslate2#diarization-speaker-identification"
             )
 
         self.model = model_handle.to(device)
@@ -51,37 +53,24 @@ class Diarization:
             "waveform": torch.from_numpy(audio[None, :]),
             "sample_rate": 16000,
         }
-        segments = self.model(audio_data)
+        segments = self.model(audio_data, num_speakers=self.num_speakers)
         return segments
 
-    def assign_speakers_to_segments(
-        self,
-        segments,
-        transcript_result,
-        speaker_name
-    ):
+    def assign_speakers_to_segments(self, segments, transcript_result, speaker_name):
         diarize_data = self.diarize_chunks_to_records(segments)
         return self._do_assign_speakers_to_segments(
-            diarize_data,
-            transcript_result,
-            speaker_name
+            diarize_data, transcript_result, speaker_name
         )
 
     def diarize_chunks_to_records(self, segments):
         if hasattr(segments, "speaker_diarization"):
             annotation = segments.speaker_diarization  # 4.x Pyannote.audio API
         else:
-            annotation = segments                       # 3.x Pyannote.audio API
-        diarize_data = list(
-            annotation.itertracks(yield_label=True)
-        )
+            annotation = segments  # 3.x Pyannote.audio API
+        diarize_data = list(annotation.itertracks(yield_label=True))
         date_frame = np.array(
             diarize_data,
-            dtype=[
-                ("segment", object),
-                ("label", object),
-                ("speaker", object)
-            ],
+            dtype=[("segment", object), ("label", object), ("speaker", object)],
         )
 
         segments_as_records = np.core.records.fromarrays(
@@ -98,19 +87,12 @@ class Diarization:
 
         return segments_as_records
 
-    def assign_speaker_to_segment(
-        self,
-        segment,
-        diarize_df,
-        speaker_name
-    ):
+    def assign_speaker_to_segment(self, segment, diarize_df, speaker_name):
         # Create a copy of the incoming segment
         segment_with_speaker = segment.copy()
 
-        intersection = np.minimum(
-            diarize_df["end"],
-            segment["end"]) - np.maximum(diarize_df["start"],
-            segment["start"]
+        intersection = np.minimum(diarize_df["end"], segment["end"]) - np.maximum(
+            diarize_df["start"], segment["start"]
         )
         diarize_df["intersection"] = intersection
         dia_segment = diarize_df[diarize_df["intersection"] > 0]
@@ -134,18 +116,11 @@ class Diarization:
         return segment_with_speaker
 
     def _do_assign_speakers_to_segments(
-        self,
-        diarize_df,
-        transcript_result,
-        speaker_name
+        self, diarize_df, transcript_result, speaker_name
     ):
         diarized_segments = []
         for seg in transcript_result["segments"]:
-            new_segment = self.assign_speaker_to_segment(
-                seg,
-                diarize_df,
-                speaker_name
-            )
+            new_segment = self.assign_speaker_to_segment(seg, diarize_df, speaker_name)
             diarized_segments.append(new_segment)
 
         transcript_result["segments"] = diarized_segments

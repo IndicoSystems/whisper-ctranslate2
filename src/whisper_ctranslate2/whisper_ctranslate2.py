@@ -9,17 +9,14 @@ from typing import List, Union
 import numpy as np
 
 from .commandline import CommandLine
+from .exit_code import ExitCode
 from .languages import from_language_to_iso_code
 from .live import Live
 from .transcribe import Transcribe, TranscriptionOptions
 from .writers import get_writer
 
 
-def get_diarization(
-    audio,
-    diarize_model,
-    verbose
-):
+def get_diarization(audio, diarize_model, verbose):
     diarization_output = {}
     for audio_path in audio:
         if verbose and len(audio) > 1:
@@ -74,11 +71,12 @@ def get_transcription_options(args):
         print_colors=args.pop("print_colors"),
         hallucination_silence_threshold=args.pop("hallucination_silence_threshold"),
         vad_filter=args.pop("vad_filter"),
-        vad_onset=args.pop("vad_onset"),
+        vad_threshold=args.pop("vad_threshold"),
         vad_min_speech_duration_ms=args.pop("vad_min_speech_duration_ms"),
         vad_max_speech_duration_s=args.pop("vad_max_speech_duration_s"),
         vad_min_silence_duration_ms=args.pop("vad_min_silence_duration_ms"),
         print_segment_as_json=args.pop("segments_as_json"),
+        multilingual=args.pop("multilingual"),
     )
 
 
@@ -115,12 +113,14 @@ def main():
     cache_directory: str = args.pop("model_dir")
     device_index: Union[int, List[int]] = args.pop("device_index")
     live_transcribe: bool = args.pop("live_transcribe")
-    audio: str = args.pop("audio")
+    audio: List[str] = args.pop("audio")
     local_files_only: bool = args.pop("local_files_only")
     live_volume_threshold: float = args.pop("live_volume_threshold")
     live_input_device: int = args.pop("live_input_device")
+    live_input_device_sample_rate: int = args.pop("live_input_device_sample_rate")
     hf_token = args.pop("hf_token")
     speaker_name = args.pop("speaker_name")
+    speaker_num = args.pop("speaker_num")
     batched = args.pop("batched")
     batch_size = args.pop("batch_size")
 
@@ -153,7 +153,7 @@ def main():
         return
 
     if batch_size and not batched:
-        sys.stderr.write("--batched_size can only be used if-- batched is True")
+        sys.stderr.write("--batched_size can only be used if --batched is True")
         return
 
     if args["max_line_count"] and not args["max_line_width"]:
@@ -212,22 +212,27 @@ def main():
             verbose,
             live_volume_threshold,
             live_input_device,
+            live_input_device_sample_rate,
             options,
         ).inference()
 
         return
 
-    transcribe = Transcribe(
-        model_dir,
-        device,
-        device_index,
-        compute_type,
-        threads,
-        cache_directory,
-        local_files_only,
-        batched,
-        batch_size,
-    )
+    try:
+        transcribe = Transcribe(
+            model_dir,
+            device,
+            device_index,
+            compute_type,
+            threads,
+            cache_directory,
+            local_files_only,
+            batched,
+            batch_size,
+        )
+    except RuntimeError as e:
+        print(f"error: {e}")
+        exit(ExitCode.RUNTIME_ERROR)
 
     diarization = len(hf_token) > 0
 
@@ -236,7 +241,9 @@ def main():
         from .diarization import Diarization
 
         diarization_device = "cpu" if device == "auto" else device
-        diarize_model = Diarization(use_auth_token=hf_token, device=diarization_device)
+        diarize_model = Diarization(
+            use_auth_token=hf_token, device=diarization_device, num_speakers=speaker_num
+        )
         if threads > 0:
             diarize_model.set_threads(threads)
 
@@ -252,10 +259,7 @@ def main():
                 print(f"\nFile: '{audio_path} ({task})'")
 
             start_time = datetime.datetime.now()
-            maybe_diarization = diarization_output.get(
-                audio_path,
-                None
-            )
+            maybe_diarization = diarization_output.get(audio_path, None)
 
             result = transcribe.inference(
                 audio_path,
@@ -265,8 +269,8 @@ def main():
                 False,
                 options,
                 diarize_model if diarization else None,
-                diarization_output = maybe_diarization,
-                speaker_name = speaker_name,
+                diarization_output=maybe_diarization,
+                speaker_name=speaker_name,
             )
 
             if diarization:
@@ -275,9 +279,7 @@ def main():
                         f"Time used for transcription: {datetime.datetime.now() - start_time}"
                     )
                 result = diarize_model.assign_speakers_to_segments(
-                    maybe_diarization,
-                    result,
-                    speaker_name
+                    maybe_diarization, result, speaker_name
                 )
 
             writer = get_writer(output_format, output_dir)

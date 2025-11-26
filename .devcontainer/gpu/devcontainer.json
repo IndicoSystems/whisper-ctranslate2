@@ -1,0 +1,31 @@
+// .devcontainer/devcontainer.json
+{
+	"name": "CUDA Python 3.12 Dev",
+  
+	"build": {
+		"context": "../..",              
+		"dockerfile": "../DockerDevImage"  
+	  
+	},
+  
+	"runArgs": [
+	  "--gpus", "all"
+	],
+  
+	"features": {
+	  "ghcr.io/devcontainers/features/github-cli:1": {}
+	},
+  
+	"customizations": {
+	  "vscode": {
+		"extensions": [
+		  "ms-python.python",
+		  "ms-python.vscode-pylance"
+		]
+	  }
+	}
+  
+	// Optional:
+	// "remoteUser": "vscode"
+  }
+  

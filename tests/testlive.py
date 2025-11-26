@@ -1,6 +1,6 @@
 import unittest
 
-from src.whisper_ctranslate2.live import Live
+from whisper_ctranslate2.live import Live
 
 
 class TestLive(unittest.TestCase):
@@ -19,6 +19,7 @@ class TestLive(unittest.TestCase):
             threshold=0.2,
             input_device=0,
             options=None,
+            input_device_sample_rate=16000,
         )
         self.assertNotEqual(None, live)
 
