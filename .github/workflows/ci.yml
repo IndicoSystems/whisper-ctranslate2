@@ -125,9 +125,9 @@ jobs:
             echo "No GPU/driver detected. Forcing CPU mode."
             echo "CUDA_VISIBLE_DEVICES=" >> "$GITHUB_ENV"
           fi
-      # TODO: Fix tests and enable them again
-      # - name: Run tests
-      #   run: make run-tests
+      TODO: Fix tests and enable them again
+      - name: Run tests
+        run: make run-tests
 
       - name: Run e2e tests
         env:
