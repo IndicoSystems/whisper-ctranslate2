@@ -3,8 +3,9 @@
 	"name": "CUDA Python 3.12 Dev",
   
 	"build": {
-	  "dockerfile": "DockerDevImage",  // relative to .devcontainer/
-	  "context": "../.."              // repo root -> sees requirements.txt
+		"context": "../..",              
+		"dockerfile": "../DockerDevImage"  
+	  
 	},
   
 	"runArgs": [
