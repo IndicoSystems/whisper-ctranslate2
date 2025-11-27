@@ -1,9 +1,6 @@
 build
 dist
 media
-<<<<<<< HEAD
-output_debug
-=======
 output_debug
 /dev_wct2
 # Byte-compiled / optimized / DLL files
@@ -222,4 +219,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
->>>>>>> 1084b48 (Standardized python .gitignore file)
