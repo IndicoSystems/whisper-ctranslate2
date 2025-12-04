@@ -14,6 +14,24 @@ try:
 except Exception:
     print("Unable to import pyannote.audio library. Make sure that it's installed")
 
+try:
+    import torch.serialization
+    import inspect
+    import pyannote.audio.core.task as task_module
+
+    # Collect all classes and functions in pyannote.audio.core.task
+    safe_objs = [
+        obj
+        for _, obj in inspect.getmembers(task_module)
+        if inspect.isclass(obj) or inspect.isfunction(obj)
+    ]
+
+    # Allow these to be unpickled when weights_only=True
+    torch.serialization.add_safe_globals(safe_objs)
+
+except Exception as e:
+    # Optional: log if you like, but don't crash on import
+    print(f"Warning: could not register pyannote safe globals: {e}")
 
 class Diarization:
     def __init__(
