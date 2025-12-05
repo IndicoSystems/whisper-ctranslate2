@@ -38,7 +38,10 @@ WORKDIR /workspace
 COPY requirements.txt /workspace/requirements.txt
 
 # Install Python packages baked into the image
-RUN python3 -m pip install --upgrade pip && \
+RUN python3 -m pip install --upgrade \
+        pip \
+        setuptools==78.1.1 \
+        gitpython==3.1.41 && \
     python3 -m pip install -r /workspace/requirements.txt && \
     rm -rf /root/.cache/pip
 
